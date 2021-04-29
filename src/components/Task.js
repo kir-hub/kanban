@@ -4,9 +4,10 @@ import Input from './Input'
 export default function Task(props) {
     const {propTitle,deleteHandler, index, titleOfCol, date}= props
 
-    const [isEditing, setEditing] = useState(false)
+    const [isEditingDesc, setEditingDesc] = useState(false)
     const [isWatchFull, setFull] = useState(false)
     const [title, setTitle] = useState(propTitle)
+    const [description, setDescription] = useState('')
 
     const deleteTask =()=>{
         deleteHandler(index)
@@ -14,12 +15,16 @@ export default function Task(props) {
     const showTask =()=>{
         setFull(prev => !prev)
     }
-    const changeDescription = ()=>{
-
+    const changeDescription = (value)=>{
+        setDescription(value)
     }
-    const changeTitle =()=>{
-        
+    const editDesc =()=>{
+        setEditingDesc(prev => !prev)
     }
+    const changeTitle =(value)=>{
+        setTitle(value)
+    }
+    
     return (
         <div onClick={showTask}>
             <h3>{title}</h3>        
@@ -31,8 +36,8 @@ export default function Task(props) {
                     <p>{date}</p>
                 </div>
                 <p>{description}</p>
-                <button>{isEditing ? 'edit' : 'ok'}</button>
-                {isEditing && <Input onSubmit={changeDescription}/>}
+                <button onClisk={editDesc}>{isEditingDesc ? 'edit' : 'ok'}</button>
+                {isEditingDesc && <Input onSubmit={changeDescription}/>}
                 <p>{titleOfCol}</p>
             </div>}
             
