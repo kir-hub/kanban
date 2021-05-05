@@ -1,0 +1,26 @@
+.columns-list-cont{
+    display: flex;
+    width: 100%;
+}
+.column-main-cont{
+    margin-left: 20px;
+    border: 1px solid black;
+    padding: 5px;
+    width: 80%;
+    background-color: blue;
+}
+.p {
+    word-wrap: break-word;
+    width: 90%;
+
+}
+.task-main-cont{
+    background-color: red;
+}
+.columns-list-cont{
+    background-color: purple;
+}
+.list-cont{
+    margin: 0;
+    width: 20%;
+}

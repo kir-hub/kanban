@@ -16,7 +16,7 @@ export default function Input(props) {
 
   return (
     <div className="input-div">
-      <input onChange={onChangeHandler} value={text} palceholder="title" />
+      <input  onChange={onChangeHandler} value={text} palceholder="title" />
       <button onClick={textHandler}> confirm </button>
     </div>
   );

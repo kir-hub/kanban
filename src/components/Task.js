@@ -1,13 +1,17 @@
-import React,{useState} from 'react'
+import React,{useState, useRef} from 'react'
 import Input from './Input'
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+
+import '../styles/styles.css'
 
 export default function Task(props) {
     const {propTitle,deleteHandler, index, titleOfCol, date}= props
 
     const [isEditingDesc, setEditingDesc] = useState(false)
+    const [isEditingTitle, setEditingTitle] = useState(false)
     const [isWatchFull, setFull] = useState(false)
     const [title, setTitle] = useState(propTitle)
-    const [description, setDescription] = useState('')
+    const [description, setDescription] = useState('s')
 
     const deleteTask =()=>{
         deleteHandler(index)
@@ -24,23 +28,35 @@ export default function Task(props) {
     const changeTitle =(value)=>{
         setTitle(value)
     }
-    
+
+    const editTitle = ()=>{
+        setEditingTitle(prev =>!prev)
+    }
     return (
-        <div onClick={showTask}>
+        <Draggable draggableId={date.toString()} index={index}>
+            {(provided) => (
+        <div className='task-main-cont' ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+            
             <h3>{title}</h3>        
             <button onClick={deleteTask}>delete task</button>
+           
             {isWatchFull && <div className='task-modal-cont'>
-                <button onClick={showTask}>close</button>
                 <div>
-                    <h3 onClick={changeTitle}>{title}</h3>
-                    <p>{date}</p>
+                    {isEditingTitle && <div ><Input  onSubmit={changeTitle}/><button onClick={editTitle}>ok</button> </div> }
+                    <h3 onClick={editTitle}>{title}</h3>
+                    
                 </div>
-                <p>{description}</p>
-                <button onClisk={editDesc}>{isEditingDesc ? 'edit' : 'ok'}</button>
+                <div className='p'>{description}</div>
                 {isEditingDesc && <Input onSubmit={changeDescription}/>}
+                <button onClick={editDesc}>{isEditingDesc ? 'ok' : 'edit'}</button>
+                <p>{date.toString()}</p>
                 <p>{titleOfCol}</p>
+                
             </div>}
+                <h6 onClick={showTask}>{isWatchFull ? 'hide more' : 'show more'}</h6>
+                
             
-        </div>
+        </div>)}
+        </Draggable>
     )
 }
