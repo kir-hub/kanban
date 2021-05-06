@@ -3,31 +3,67 @@ import Input from './Input'
 import Task from './Task'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
+const fetchTasks =()=>{
+    const data = localStorage.getItem('tasks') 
+    if(!data){
+        return []
+    }
+    return JSON.parse(data)
+}
+
 
 export default function Column(props) {
 
-    const {date,columns,setColumns, getTasks,colTitle, deleteHandler, index} = props
+    const {date,
+        editColumn,
+        columns,
+        setColumns, 
+        getTasks,
+        colTitle, 
+        deleteHandler, 
+        index} = props
 
     const [title, setTitle] = useState(colTitle)
-    // const [tasks, setTasks] = useState([])
     const [isEditing, setEditing] = useState(false)
-    // const [defaultTasks, setDefaultTasks] = useState(tasks)
-    const [colInd, setColIndex] = useState(null)
+    const [dndTasks, setDndTasks] = useState([...columns[index].tasks])
 
+    
     useEffect(()=>{
-        const colIndex = columns.findIndex((item)=> date == item.date)
-        setColIndex(index)
-    },[])
+        setDndTasks(columns[index].tasks)
+        getTasks(columns[index].tasks)
+
+    },[columns[index].tasks])
 
     const createTask=()=>{
-        const newDate = new Date()
-        const task = {title: 'new task', date: newDate}
+        const newDate = new Date().toString()
+        const task = {title: 'taskTitle', date: newDate, desc: 'empty', dateOfEditing: null}
         const newCols = [...columns]
-        // const colIndex = columns.findIndex((item)=> item.date == date)
-        // setColIndex(colIndex)
         newCols.map((i, index) => i.date == date && i.tasks.push(task))
         setColumns([...newCols ])
-        
+    }
+
+    const editTask=(value,taskIndex) =>{
+        const cols = [...columns]
+        const dateOfEditing = new Date().toString()
+        cols.map((i,index)=>{
+            if(i.date == date ){
+                i.tasks[taskIndex].title = value;
+                i.tasks[taskIndex].dateOfEditing = dateOfEditing;
+            }
+        })
+        setColumns([...cols])
+    }
+    const editDesc = (value, taskIndex)=>{
+        const cols = [...columns]
+        const dateOfEditing = new Date().toString()
+        cols.map((i,index)=>{
+            if(i.date == date){
+                i.tasks[taskIndex].desc = value;
+                i.tasks[taskIndex].dateOfEditing = dateOfEditing;
+
+            }
+        })
+        setColumns([...cols])
     }
 
     const deleteCol=()=>{
@@ -35,7 +71,7 @@ export default function Column(props) {
     }
 
     const editCol =(newTitle)=>{
-        setTitle(newTitle)
+        editColumn(newTitle,date)
 
     }
     const showModal=()=>{
@@ -44,19 +80,17 @@ export default function Column(props) {
     
     const deleteTask =(ind)=>{
         const newTasks = [...columns[index].tasks]
+        const newCols = [...columns]
         newTasks.splice(ind,1)
         console.log(newTasks);
-        setColumns([...columns, columns[index].tasks = newTasks])
+        newCols.map((i, index) => i.date == date && i.tasks.splice(ind,1))
+        setColumns([...newCols])
+        console.log(columns);
     }   
     
-console.log(columns[index].tasks);
     
     return (
-        // <DragDropContext onDragEnd={handleOnDragEnd}>
-
-        <Droppable droppableId="column-main-cont">
-            {(provided) => (
-        <div className='column-main-cont' {...provided.droppableProps} ref={provided.innerRef}>
+        <div className='column-main-cont' >
             <button onClick={showModal}>{isEditing ? 'ok' : 'edit'}</button>        
             {isEditing && <div className='edit-modal'>
                 <Input onSubmit={editCol}/>
@@ -64,21 +98,21 @@ console.log(columns[index].tasks);
             
             <button onClick={deleteCol}>delete</button>    
             <button onClick={()=>createTask(date)}>add task</button>
-            <div className='title'><h3>{title}</h3></div>    
+            <div className='title'><h3>{colTitle}</h3></div>    
             <div className='column-main'>
-                 {columns[index].tasks.map((item,index)=>( /*tasks.map */
+                 {dndTasks.map((item,index)=>( /*tasks.map */
                     <div key={item.date}><Task 
                     deleteHandler={deleteTask}
                     index={index} 
                     titleOfCol={title}
                     date={item.date}
-                    propTitle={item.title}/></div>
+                    propTitle={item.title}
+                    editTask={editTask}
+                    editTaskDesc={editDesc}
+                    propDesc={item.desc}
+                    dateOfEditing={item.dateOfEditing}/></div>
                 ))}
             </div>
-            {provided.placeholder}
         </div>
-        )}
-        </Droppable>
-        //  </DragDropContext>
     )
 }
