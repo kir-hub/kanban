@@ -12,7 +12,8 @@ const getColumns =()=>{
     return JSON.parse(data)
 }
 
-export default function Kanban() {
+export default function Kanban(props) {
+    const {name}=props
 
     const [columns, setColumns] = useState([])
     const [tasks, setTasks] = useState([])
